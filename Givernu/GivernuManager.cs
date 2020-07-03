@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +9,10 @@ namespace Givernu
 {
 	public class GivernuManager : IGivernuManager
 	{
+		#region Private Data
+		private static readonly string _gitFolder = ".git";
+		#endregion
+
 		#region Properties
 		public string CurrentDirectory							{get;set;}
 
@@ -18,7 +23,23 @@ namespace Givernu
 
 		public void FindGitDirectory(string initialFolder)
 		{
-			throw new NotImplementedException();
+			if (Directory.Exists(Path.Combine(initialFolder, _gitFolder)))
+			{
+				this.CurrentDirectory = initialFolder;
+			}
+			else
+			{
+				DirectoryInfo diParent	= Directory.GetParent(initialFolder);
+
+				if (diParent  != null)
+				{
+					this.FindGitDirectory(diParent.FullName);
+				}
+				else
+				{
+					return;
+				}
+			}
 		}
 
 		public void CreateTagDictionary()
