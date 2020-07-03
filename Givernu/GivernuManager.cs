@@ -10,7 +10,9 @@ namespace Givernu
 	public class GivernuManager : IGivernuManager
 	{
 		#region Private Data
-		private static readonly string _gitFolder = ".git";
+		private static readonly string _gitFolder	= ".git";
+		private static readonly string _infoRefs	= "info\refs";
+		private static readonly string _refsTags	= "refs/tags/";
 		#endregion
 
 		#region Properties
@@ -44,7 +46,34 @@ namespace Givernu
 
 		public void CreateTagDictionary()
 		{
-			throw new NotImplementedException();
+			if (String.IsNullOrEmpty(this.CurrentDirectory))
+			{
+				return;
+			}
+			string fileName	= Path.Combine(this.CurrentDirectory, _infoRefs);
+
+			using (StreamReader reader = new StreamReader(fileName))
+			{
+				string[] lines	= reader.ReadToEnd().Split(new string[]{"\r\n", "\n"}, StringSplitOptions.RemoveEmptyEntries);
+
+				foreach (string line in lines)
+				{
+					if (line.Contains(_refsTags) && line.EndsWith("{}"))
+					{
+						string[] cells			= line.Split(new string[]{"\t"}, StringSplitOptions.RemoveEmptyEntries);
+
+						string key				= cells[0].Trim();
+						string value			= cells[1].TrimEnd('{', '}', '^').Replace(_refsTags, "");
+
+						if (!TagsDictionary.ContainsKey(key))
+						{
+							TagsDictionary.Add(key, new List<string>());
+						}
+
+						TagsDictionary[key].Add(value);
+					}
+				}
+			}
 		}
 
 		public void CreateGitEntries()
