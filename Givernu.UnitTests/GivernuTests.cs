@@ -40,5 +40,15 @@ namespace Givernu.UnitTests
 
 			Assert.That(gm.CurrentDirectory == null);
 		}
+
+		[Test]
+		public void CreationOfTagDictionarySucceeds()
+		{
+			string folder = Directory.GetCurrentDirectory();
+			GivernuManager gm	= new GivernuManager();
+			gm.FindGitDirectory(folder);
+
+			gm.CreateTagDictionary();
+		}
 	}
 }
