@@ -50,5 +50,19 @@ namespace Givernu.UnitTests
 
 			gm.CreateTagDictionary();
 		}
+
+		[Test]
+		public void CreationGitEntriesSucceeds()
+		{
+			string folder = Directory.GetCurrentDirectory();
+			GivernuManager gm	= new GivernuManager();
+			gm.FindGitDirectory(folder);
+
+			gm.CreateTagDictionary();
+
+			gm.CreateGitEntries();
+
+			gm.SortGitEntries();
+		}
 	}
 }

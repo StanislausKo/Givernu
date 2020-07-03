@@ -41,5 +41,10 @@ namespace Givernu
 		/// Creates the list of git entries in CurrentDirectory.
 		/// </summary>
 		void CreateGitEntries();
+
+		/// <summary>
+		/// Sorts Git entries by DateTime and assigns indices.
+		/// </summary>
+		void SortGitEntries();
 	}
 }
