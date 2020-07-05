@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Givernu
 {
@@ -16,11 +17,16 @@ namespace Givernu
 		#endregion
 
 		#region Properties
-		public string CurrentDirectory							{get;set;}
+		public string							CurrentDirectory	{get;set;}
 
-		public Dictionary<string, List<string>> TagsDictionary	{get;set;}	= new Dictionary<string, List<string>>();
+		public Dictionary<string, List<string>> TagsDictionary		{get;set;}	= new Dictionary<string, List<string>>();
 
-		public List<GitEntry> GitEntries						{get;set;}	= new List<GitEntry>();
+		public List<GitEntry>					GitEntries			{get;set;}	= new List<GitEntry>();
+				
+		/// <summary>
+		/// ListView to display entries
+		/// </summary>
+		public ListView							GitEntriesViewer	{get;set;}	= null;
 		#endregion
 
 		public void FindGitDirectory(string initialFolder)
@@ -118,6 +124,53 @@ namespace Givernu
 			{
 				this.GitEntries[i].Number	= i + 1;
 			}
+		}
+
+		/// <summary>
+		/// Displays the entries in the attached ListView
+		/// </summary>
+		public void DisplayGitEntries()
+		{
+			if (this.GitEntriesViewer == null)
+			{
+				return;
+			}
+
+			this.GitEntriesViewer.Items.Clear();
+
+			foreach (GitEntry gitEntry in this.GitEntries)
+			{
+				string tags			= String.Join(",", gitEntry.Tags);
+				ListViewItem lvi	= new ListViewItem
+														(
+															new string[]
+																		{
+																			gitEntry.Number.ToString(), 
+																			gitEntry.ID, 
+																			gitEntry.DateTime.ToString("yyyy-MM-dd@HH:mm"), 
+																			gitEntry.Branch, 
+																			gitEntry.Description, 
+																			gitEntry.Author, 
+																			tags
+																		}
+														);
+
+				lvi.Tag				= gitEntry;
+
+				this.GitEntriesViewer.Items.Add(lvi);
+			}
+
+			this.GitEntriesViewer.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+			this.GitEntriesViewer.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+		}
+
+		public void HandleDirectory(string folderName)
+		{
+			this.FindGitDirectory(folderName);
+			this.CreateTagDictionary();
+			this.CreateGitEntries();
+			this.SortGitEntries();
+			this.DisplayGitEntries();
 		}
 
 		private void ProceedLogFile(string fileName)
