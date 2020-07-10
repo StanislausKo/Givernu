@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace Givernu
 {
@@ -57,5 +58,9 @@ namespace Givernu
 		/// Displays the entries in the attached ListView
 		/// </summary>
 		void DisplayGitEntries();
+
+		XElement ToXElement(bool selected = false);
+		string	ToCsv(bool selected = false, string separator = ";");
+		string	ToText(bool selected = false);
 	}
 }

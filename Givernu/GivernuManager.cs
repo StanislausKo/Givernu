@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace Givernu
 {
@@ -208,6 +209,67 @@ namespace Givernu
 					this.GitEntries.Add(gitEntry);
 				}
 			}
+		}
+
+		public XElement ToXElement(bool selected = false)
+		{
+			GitEntry[] entries	= null;
+			
+			if (selected)
+			{
+				entries			= this.GitEntriesViewer.SelectedItems.OfType<ListViewItem>().Select(lvi => lvi.Tag as GitEntry).ToArray();
+			}
+			else
+			{
+				entries			= this.GitEntriesViewer.Items.OfType<ListViewItem>().Select(lvi => lvi.Tag as GitEntry).ToArray();
+			}
+
+			return this.EntriesToXElement(entries);
+		}
+
+		public string	ToCsv(bool selected = false, string separator = ";")
+		{
+			GitEntry[] entries	= null;
+			
+			if (selected)
+			{
+				entries			= this.GitEntriesViewer.SelectedItems.OfType<ListViewItem>().Select(lvi => lvi.Tag as GitEntry).ToArray();
+			}
+			else
+			{
+				entries			= this.GitEntriesViewer.Items.OfType<ListViewItem>().Select(lvi => lvi.Tag as GitEntry).ToArray();
+			}
+
+			return this.EntriesToCsv(entries, separator);
+		}
+
+		public string	ToText(bool selected = false)
+		{
+			return ToCsv(selected, "\t");
+		}
+
+		private XElement EntriesToXElement(GitEntry[] entries)
+		{
+			XElement x	= new XElement("GitEntries");
+
+			foreach (GitEntry entry in entries)
+			{
+				x.Add(entry.ToXElement());
+			}
+
+			return x;
+		}
+
+		private string EntriesToCsv(GitEntry[] entries, string separator)
+		{
+			string result	= "";
+
+			foreach (GitEntry entry in entries)
+			{
+				result	+= $"{entry.ToCsv(separator)}\r\n";
+			}
+
+			return result;
 		}
 	}
 }
